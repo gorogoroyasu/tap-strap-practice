@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </head>
+    <body>
+      <div id="body">
+        <div>
+            practice the tap usage
+        </div>
+        <div class="question">{{ question }}</div>
+        <form>
+            <input v-model="inp" v-on:keyup="check" v-focus>
+        </form>
+        <div v-if="err" style="color: red">
+          {{ errorMsg }}
+        </div>
+        <div>
+            hint: <span id="hint">{{ hint }}</span>
+        </div>
+      </div>
+    </body>
+    <script>
+
+        let binding = {
+          a: 'oxxxx', b: 'xoxxo', c: 'oxooo', d: 'oxoxx', e: 'xoxxx', f: 'oooxx',
+          g: 'oxoox', h: 'xoooo', i: 'xxoxx', j: 'oooxo', k: 'oxxox', l: 'xxoox',
+          m: 'xoxox', n: 'ooxxx', o: 'xxxox', p: 'ooxxo', q: 'xooxo', r: 'oooox',
+          s: 'xxxoo', t: 'xooxx', u: 'xxxxo', v: 'ooxoo', w: 'oxoxo', x: 'xoxoo',
+          y: 'oxxxo', z: 'xxoxo'//, bs: 'xooox', enter: 'oxxoo'
+        }
+        // https://qiita.com/mi-miya/items/9eb9a0fb14f4ec3a8764
+        let randomAry = function(ary) {
+          for (var i = ary.length - 1; i >= 0; i--){
+            var rand = Math.floor( Math.random() * ( i + 1 ) );
+            [ary[i], ary[rand]] = [ary[rand], ary[i]]
+          }
+          return ary
+        }
+
+        let ary = randomAry(Object.keys(binding))
+        var app = new Vue({
+            el: '#body',
+            data: {
+                question: ary[0],
+                hint: binding[ary[0]],
+                count: 0,
+                inp: null,
+                errorMsg: null,
+                err: false
+            },
+            directives: {
+              focus: {
+                // ディレクティブ定義
+                inserted: function (el) {
+                  el.focus()
+                }
+              }
+            },
+
+            methods: {
+              initializeError: function() {
+                this.err = null
+                this.errorMsg = null
+                this.inp = null
+              },
+              check: function(event) {
+                if (!ary.includes(event.key)) {
+                  this.initializeError()
+                  return
+                }
+                if (event.key == this.question) {
+                  this.count++
+                  if (this.count >= ary.length) {
+                    ary = randomAry(Object.keys(binding))
+                    this.count = 0
+                  }
+                  this.question = ary[this.count]
+                  this.hint = binding[ary[this.count]]
+                  this.initializeError()
+                } else {
+                  this.inp = null
+                  this.errorMsg = 'you typed ' + event.key + ' but the correct key is ' + this.question;
+                  this.err = true
+                }
+              }
+
+            }
+        })
+    </script>
+</html>
