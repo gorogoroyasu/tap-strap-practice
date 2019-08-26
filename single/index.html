@@ -1,21 +1,27 @@
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+          crossorigin="anonymous">
     </head>
     <body>
-      <div id="body">
-        <div>
+      <div id="body" class="container">
+        <h1 class="display-4">
             practice the tap usage
-        </div>
-        <div class="question">{{ question }}</div>
-        <form>
+        </h1>
+        <p class="lead">Be Professional!</p>
+        <div class="question">Question is <code>{{ question }}</code></div>
+        <form class="form-input">
             <input v-model="inp" v-on:keyup="check" v-focus>
         </form>
-        <div v-if="err" style="color: red">
-          {{ errorMsg }}
+        <div v-if="err">
+          You typed <code>{{ errorKey }}</code> and the question is <code>{{ question }}</code>
         </div>
-        <div>
-            hint: <span id="hint">{{ hint }}</span>
+        <div v-if="showHint">
+            hint: <span id="hint" class="text text-left">{{ hint }}</span>
         </div>
       </div>
     </body>
@@ -45,8 +51,9 @@
                 hint: binding[ary[0]],
                 count: 0,
                 inp: null,
-                errorMsg: null,
-                err: false
+                errorKey: null,
+                err: 0,
+                showHint: false
             },
             directives: {
               focus: {
@@ -56,12 +63,12 @@
                 }
               }
             },
-
             methods: {
               initializeError: function() {
                 this.err = null
                 this.errorMsg = null
                 this.inp = null
+                this.showHint = false
               },
               check: function(event) {
                 if (!ary.includes(event.key)) {
@@ -79,8 +86,11 @@
                   this.initializeError()
                 } else {
                   this.inp = null
-                  this.errorMsg = 'you typed ' + event.key + ' but the correct key is ' + this.question;
-                  this.err = true
+                  this.errorKey = event.key
+                  this.err++
+                  if (this.err >= 3) {
+                    this.showHint = true
+                  }
                 }
               }
 
